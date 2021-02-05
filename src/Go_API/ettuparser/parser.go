@@ -2,21 +2,31 @@ package ettuparser
 
 import (
 	"github.com/antchfx/htmlquery"
+	"encoding/json"
 )
 
 const ettuURL = "https://mobile.ettu.ru/station/"
 
-type Status struct {
+type Statuses struct {
 	Title string
 	Routes    []string
 	Distances []string
 	Arrivals  []string
 }
 
+
+type station struct {
+	ID     string
+	Status Statuses
+}
+type stations struct {
+	List []station
+}
+
 //ParseStation -parses ETTU station by id
-func ParseStation(id string) Status {
+func ParseStation(id string) Statuses {
 	doc, _ := htmlquery.LoadURL(ettuURL + id)
-	var data Status
+	var data Statuses
 	data.Title=htmlquery.InnerText(htmlquery.Find(doc,"//p[1]")[0])
 	routes := htmlquery.Find(doc,
 		"//div[@style=\"width: 3em;display:inline-block;text-align:center;\"]/b")
@@ -31,4 +41,17 @@ func ParseStation(id string) Status {
 	}
 
 	return data
+}
+
+func StationSend() string {
+	var data stations
+	pstations := []string{"3442", "962313"}
+	for _, n := range pstations {
+		data.List= append(data.List, station{
+			ID:     n,
+			Status: ParseStation(n),
+		})
+	}
+	jsonData, _ := json.MarshalIndent(data, "", "  ")
+	return string(jsonData)
 }

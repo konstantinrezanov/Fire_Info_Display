@@ -2,7 +2,7 @@ let timeWorker = new Worker("js/time.js");
 let weatherWorker = new Worker("js/weather.js");
 let stationWorker = new Worker("js/station.js");
 let lastFmWorker = new Worker("js/lastfm.js");
-
+let ratePlotWorker = new Worker("js/rateplot.js")
 timeWorker.onmessage = function (e) {
   document.getElementById("date").innerHTML = e.data[0];
   document.getElementById("time").innerHTML = e.data[1];
