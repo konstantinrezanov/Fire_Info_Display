@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"Go_API/src"
 )
 
 func main() {
@@ -13,22 +13,16 @@ func main() {
 	http.Handle("/", fs)
 	
 	http.HandleFunc("/data",dataServer)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Fatal(http.ListenAndServe("192.168.1.240:8081", nil))
 }
 
 func dataServer(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Header().Set("Content-Type", "application/json")
 
-	b, err := ioutil.ReadFile("./data/data.json")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	raw := json.RawMessage(string(b))
+	raw := json.RawMessage(string(GO_API.Ret()))
 	var objmap map[string]*json.RawMessage
-	err = json.Unmarshal(raw, &objmap)
+	err:= json.Unmarshal(raw, &objmap)
 	if err != nil {
 		log.Fatal(err)
 	}
