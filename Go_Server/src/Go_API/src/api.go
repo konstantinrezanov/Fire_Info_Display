@@ -1,51 +1,28 @@
 package GO_API
 
 import (
-	"encoding/json"
 	"Go_API/src/ettuparser"
-	"sync"
-	"Go_API/src/weatherparser"
+	"encoding/json"
 	//"log"
 )
-
-type store struct {
-	Stations []station
-	Weather  weatherparser.WeatherData
-}
 
 type station struct {
 	ID     string
 	Status ettuparser.Status
 }
-
-var wg sync.WaitGroup
-
-func Ret() string {
-
-	for {
-		var data store
-		wg.Add(1)
-		go writeStation(&data)
-		wg.Add(1)
-		go writeWeather(&data)
-		wg.Wait()
-		jsonData, _ := json.MarshalIndent(data, "", "  ")
-		return string(jsonData)
-	}
+type stations struct {
+	List []station
 }
 
-func writeWeather(data *store) {
-	defer wg.Done()
-	data.Weather = weatherparser.GetWeather()
-}
-
-func writeStation(data *store) {
-	defer wg.Done()
+func StationSend() string {
+	var data stations
 	pstations := []string{"3442", "962313"}
 	for _, n := range pstations {
-		data.Stations = append(data.Stations, station{
+		data.List= append(data.List, station{
 			ID:     n,
 			Status: ettuparser.ParseStation(n),
 		})
 	}
+	jsonData, _ := json.MarshalIndent(data, "", "  ")
+	return string(jsonData)
 }
