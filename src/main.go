@@ -3,10 +3,12 @@ package main
 import (
 	"Go_API/ettuparser"
 	"Go_API/ratePlot"
+	"Go_API/downdetector"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func main() {
@@ -16,6 +18,7 @@ func main() {
 
 	http.HandleFunc("/data/station", stationServer)
 	http.HandleFunc("/data/rate", rateServer)
+	http.HandleFunc("/data/detector", detector)
 	log.Fatal(http.ListenAndServe("192.168.1.240:8081", nil))
 }
 
@@ -34,4 +37,12 @@ func rateServer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "image/svg+xml")
 	rates := ratePlot.ParseRates(r.FormValue("base"), r.FormValue("symbol"))
 	fmt.Fprintln(w, ratePlot.Plot(rates))
+}
+
+func detector(w http.ResponseWriter, r *http.Request) {
+	value := strings.Split(r.FormValue("key"), ",")
+
+	w.Header().Add("Content-Type", "application/json")
+	
+	fmt.Fprintln(w, downdetector.Downdetector(value))
 }

@@ -24,7 +24,7 @@ type stations struct {
 }
 
 //ParseStation -parses ETTU station by id
-func ParseStation(id string) Statuses {
+func parseStation(id string) Statuses {
 	doc, _ := htmlquery.LoadURL(ettuURL + id)
 	var data Statuses
 	data.Title=htmlquery.InnerText(htmlquery.Find(doc,"//p[1]")[0])
@@ -49,7 +49,7 @@ func StationSend() string {
 	for _, n := range pstations {
 		data.List= append(data.List, station{
 			ID:     n,
-			Status: ParseStation(n),
+			Status: parseStation(n),
 		})
 	}
 	jsonData, _ := json.MarshalIndent(data, "", "  ")
